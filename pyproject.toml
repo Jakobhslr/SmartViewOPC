@@ -1,0 +1,11 @@
+[project]
+name = "smartview-opc"
+version = "1.0.0"
+description = "Mini-SCADA-System mit OPC UA, Flask und Web-Frontend"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask",
+    "flask-cors",
+    "opcua",
+]
