@@ -28,6 +28,7 @@ else:
         "druck":                'ns=3;s="Drucksensor_DB"."PressureBar"',
         "foerderband_ein":      'ns=3;s="HMI_Status_DB"."Band_läuft"',
         "zylinder_ausgefahren": 'ns=3;s="HMI_Status_DB"."Zyl_ausfahren"',
+        "sensor_lichtschranke": 'ns=3;s="HMI_Status_DB"."Sensor_Lichtschranke"',
     }
 
 # ─── Schreib-Tags (Dashboard → SPS) ────────────────────────────────

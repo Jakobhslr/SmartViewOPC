@@ -114,6 +114,10 @@ async function poll() {
     // Zylinder (Digital)
     updateDigital("ringZylinder", "valZylinder", data.zylinder_ausgefahren, "Ausgefahren", "Eingefahren");
 
+    // Lichtschranke (Digital) — unterbrochen = Bauteil vorhanden
+    // Lichtschranke: false = unterbrochen = Bauteil vorhanden
+    updateDigital("ringLichtschranke", "valLichtschranke", !data.sensor_lichtschranke, "Bauteil vorhanden", "Frei");
+
     // Letztes Update
     document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString("de-DE");
 

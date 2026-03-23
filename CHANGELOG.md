@@ -4,43 +4,70 @@ Alle Änderungen und Meilensteine des Projekts.
 
 ---
 
-## [1.0.0] – 2026-03-23
+## [1.2.0] – 2026-03-23
 
-### 🎯 Meilenstein: Initiale Version
-
-**Projektaufbau (komplett neu):**
-- Projekt mit `uv init` erstellt, `.venv` via `uv sync`
-- Abhängigkeiten: `flask`, `flask-cors`, `opcua`
+### Lichtschranken-Sensor
 
 **Backend:**
-- `config.py` – Zentrale Konfiguration mit Platzhalter-Node IDs (werden später durch echte SPS Node IDs ersetzt)
-- `opc_simulator.py` – OPC UA Server-Simulator für virtuelles Testen
-  - Drucksensor (REAL, 0–10 bar, Sinuswelle + Rauschen)
-  - Förderband ein/aus (BOOL)
-  - Taster Start (BOOL)
-  - Reagiert auf Start-Befehl: Förderband geht an
-- `opc_client.py` – OPC UA Client mit Lesen + Schreiben, Auto-Reconnect
-- `api.py` – Flask REST API
-  - `GET /api/tags` – Alle Prozesswerte lesen
-  - `GET /api/tags/<name>` – Einzelwert lesen
-  - `POST /api/cmd/<name>` – Steuerbefehl senden
-  - `GET /api/status` – Verbindungsstatus
+- `config.py` – `sensor_lichtschranke` Tag hinzugefügt (`ns=3;s="HMI_Status_DB"."Sensor_Lichtschranke"`)
 
 **Frontend:**
-- Premium Dark-Mode Dashboard mit Glassmorphism-Design
-- Drucksensor-Anzeige mit Balken (0–10 bar, Warnung ab 7 bar)
-- Förderband Status-Indikator (Läuft / Gestoppt)
-- Taster Start Status-Indikator (Aktiv / Inaktiv)
-- **Start-Button** → Sendet `cmd_start = true` über OPC UA an SPS
-- **Stop-Button** → Sendet `cmd_start = false`
-- Rohdaten / Entwicklerkonsole (aufklappbar)
-- 1-Sekunden Live-Polling
+- Neue Karte „Lichtschranke" im Dashboard
+- Invertierte Logik: `false` (unterbrochen) = **Bauteil vorhanden**, `true` = Frei
+- Card-Grid auf 4 Spalten erweitert
 
 ---
 
-## Geplant
+## [1.1.0] – 2026-03-23
 
-### Node ID Integration
-- [ ] Echte SPS Node IDs vom User erhalten
-- [ ] `config.py` Node IDs ersetzen
-- [ ] Test mit echter SPS (S7-1500)
+### Steuerung & Taster-Logik
+
+**Backend:**
+- `config.py` – Schreib-Tags (`WRITE_TAGS`) getrennt von Lese-Tags (`TAGS`)
+- `opc_client.py` – separater `write_nodes`-Cache für Schreib-Tags
+- `api.py` – Taster-Impuls-Logik: `true → 300 ms → false` via Hintergrund-Thread
+  (SPS sieht steigende + fallende Flanke, wie ein echter Taster)
+
+**Frontend:**
+- Steuersektion mit 3 Tasten: **Start** (grün aktiv), **Stop** (rot), **Reset** (orange)
+- Start-Button leuchtet grün solange aktiv, erlischt bei Stop/Reset
+- Feedback-Text nach jedem Tastendruck
+
+**Schreib-Tags (S7-1516):**
+- `start` → `ns=3;s="HMI_CMD_DB"."cmd_start"`
+- `stop`  → `ns=3;s="HMI_CMD_DB"."cmd_stop"`
+- `reset` → `ns=3;s="HMI_CMD_DB"."cmd_reset"`
+
+---
+
+## [1.0.0] – 2026-03-23
+
+### Initiale Version
+
+**Projektaufbau:**
+- Projekt mit `uv init` erstellt, Abhängigkeiten: `flask`, `flask-cors`, `opcua`
+- Raspberry Pi 4B (192.168.137.108) als Edge Device & Webserver
+- Siemens S7-1516 (192.168.2.12:4840) als OPC UA Server
+
+**Backend:**
+- `config.py` – Zentrale Konfiguration, Endpoint & Node IDs, Simulator-Modus (`USE_SIMULATOR=1`)
+- `opc_client.py` – OPC UA Client mit Auto-Reconnect, Lesen & Schreiben
+- `opc_simulator.py` – Lokaler OPC UA Simulator für Testbetrieb ohne SPS
+- `api.py` – Flask REST API
+  - `GET /api/tags` – Alle Prozesswerte als JSON
+  - `GET /api/tags/<name>` – Einzelwert lesen
+  - `POST /api/cmd/<name>` – Steuerbefehl senden
+  - `GET /api/status` – OPC UA Verbindungsstatus
+
+**Frontend:**
+- Dark-Mode Dashboard (Glassmorphism-Design)
+- Drucksensor (Analog, 0–10 bar) mit Balkenanzeige, Warnung ab 7 bar
+- Förderband-Indikator (Läuft / Gestoppt)
+- Zylinder-Indikator (Ausgefahren / Eingefahren)
+- 1-Sekunden Live-Polling via Fetch/AJAX
+- Rohdaten-Konsole (aufklappbar)
+
+**Lese-Tags (S7-1516):**
+- `druck`                → `ns=3;s="Drucksensor_DB"."PressureBar"`
+- `foerderband_ein`      → `ns=3;s="HMI_Status_DB"."Band_läuft"`
+- `zylinder_ausgefahren` → `ns=3;s="HMI_Status_DB"."Zyl_ausfahren"`

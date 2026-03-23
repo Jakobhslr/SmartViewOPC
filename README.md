@@ -1,8 +1,8 @@
 # SmartView OPC – Mini-SCADA-System
 
-Industrielles SCADA-Dashboard für die Siemens S7-1516.
-Liest Prozessdaten via **OPC UA**, stellt sie per **REST-API** (Flask) bereit
-und zeigt sie in einem **responsiven Web-Dashboard** an.
+> Industrielles SCADA-Dashboard für die **Siemens S7-1516**.
+> Liest Prozessdaten live via **OPC UA**, stellt sie per **REST-API** (Flask) bereit
+> und zeigt sie in einem modernen **Web-Dashboard** an — läuft auf einem **Raspberry Pi 4B**.
 
 ---
 
@@ -31,9 +31,26 @@ und zeigt sie in einem **responsiven Web-Dashboard** an.
 
 **Datenfluss:**
 1. S7-1516 stellt OPC UA Server bereit (Port 4840)
-2. Raspberry Pi verbindet sich als OPC UA Client
-3. Flask REST-API (`/api/tags`) gibt Prozessdaten als JSON aus
-4. Browser pollt alle 1 s und zeigt Werte live an
+2. Raspberry Pi verbindet sich als OPC UA Client und liest Prozessdaten
+3. Flask REST-API gibt die Daten als JSON aus
+4. Browser pollt alle 1 s und zeigt Werte live im Dashboard an
+5. Steuerbefehle (Start/Stop/Reset) werden als Taster-Impuls über OPC UA zurück an die SPS gesendet
+
+---
+
+## Dashboard
+
+| Anzeige | Typ | Beschreibung |
+|---|---|---|
+| Drucksensor | Analog | Druckanzeige 0–10 bar mit Balken, Warnung ab 7 bar |
+| Förderband | Digital | Läuft / Gestoppt |
+| Zylinder | Digital | Ausgefahren / Eingefahren |
+| Lichtschranke | Digital | Bauteil vorhanden / Frei (invertiert: false = unterbrochen) |
+| Start | Taster | Startet Anlage, leuchtet grün solange aktiv |
+| Stop | Taster | Stoppt Anlage |
+| Reset | Taster | Setzt Anlage zurück |
+
+Alle Taster senden einen **echten Impuls** (`true → 300 ms → false`), genau wie ein physischer Taster an der Anlage.
 
 ---
 
@@ -47,8 +64,8 @@ uv sync
 uv run python backend/api.py
 
 # 2b. Oder mit Simulator (kein S7 nötig)
-uv run python backend/opc_simulator.py &
-uv run python backend/api.py
+USE_SIMULATOR=1 uv run python backend/opc_simulator.py &
+USE_SIMULATOR=1 uv run python backend/api.py
 ```
 
 Dashboard öffnen: **http://192.168.137.108:5000**
@@ -61,31 +78,22 @@ Dashboard öffnen: **http://192.168.137.108:5000**
 
 - Raspberry Pi 4B mit Raspberry Pi OS (64-bit)
 - Python 3.11+
-- `uv` installiert
 
 ### Installation
 
 ```bash
-# uv installieren (falls nicht vorhanden)
+# uv installieren
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.bashrc
 
 # Repo klonen
-git clone <repo-url> SmartViewOPC
+git clone https://github.com/Jakobhslr/SmartViewOPC.git
 cd SmartViewOPC
 
 # Abhängigkeiten installieren
 uv sync
-```
 
-### Starten
-
-```bash
-# Mit echter SPS (S7-1516 muss erreichbar sein)
-uv run python backend/api.py
-
-# Mit Simulator (zum Testen ohne SPS)
-uv run python backend/opc_simulator.py &
+# Starten
 uv run python backend/api.py
 ```
 
@@ -93,39 +101,39 @@ uv run python backend/api.py
 
 ## Konfiguration
 
-### OPC UA Endpoint
+Datei: [`backend/config.py`](backend/config.py)
 
-Datei: [backend/config.py](backend/config.py)
+### OPC UA Endpoint
 
 ```python
 OPC_UA_ENDPOINT = "opc.tcp://192.168.2.12:4840"   # Siemens S7-1516
 ```
 
-Alternativ per Umgebungsvariable:
-
-```bash
-export OPC_ENDPOINT="opc.tcp://192.168.2.12:4840"
-```
-
-### Node IDs (Tags)
-
-Die Node IDs der SPS-Variablen aus TIA Portal eintragen:
+### Lese-Tags (SPS → Dashboard)
 
 ```python
 TAGS = {
-    "pressure":    'ns=3;s="DB_Prozess"."Drucksensor"',
-    "foerderband": 'ns=3;s="DB_Prozess"."Foerderband"',
-    "taster_start":'ns=3;s="DB_Prozess"."Taster_Start"',
-    "cmd_start":   'ns=3;s="DB_Prozess"."CMD_Start"',
+    "druck":                'ns=3;s="Drucksensor_DB"."PressureBar"',
+    "foerderband_ein":      'ns=3;s="HMI_Status_DB"."Band_läuft"',
+    "zylinder_ausgefahren": 'ns=3;s="HMI_Status_DB"."Zyl_ausfahren"',
+    "sensor_lichtschranke": 'ns=3;s="HMI_Status_DB"."Sensor_Lichtschranke"',
 }
 ```
 
-### Port / Host
+### Schreib-Tags (Dashboard → SPS)
+
+```python
+WRITE_TAGS = {
+    "start": 'ns=3;s="HMI_CMD_DB"."cmd_start"',
+    "stop":  'ns=3;s="HMI_CMD_DB"."cmd_stop"',
+    "reset": 'ns=3;s="HMI_CMD_DB"."cmd_reset"',
+}
+```
+
+### Simulator-Modus (ohne SPS)
 
 ```bash
-export SMARTVIEW_HOST=0.0.0.0   # Standard
-export SMARTVIEW_PORT=5000       # Standard
-export SMARTVIEW_DEBUG=0         # 1 für Entwicklung
+export USE_SIMULATOR=1   # Schaltet auf localhost:4840 und Simulator-NodeIDs
 ```
 
 ---
@@ -136,7 +144,7 @@ export SMARTVIEW_DEBUG=0         # 1 für Entwicklung
 |---------|----------|--------------|
 | GET | `/api/tags` | Alle Prozesswerte als JSON |
 | GET | `/api/tags/<name>` | Einzelnen Wert lesen |
-| POST | `/api/cmd/<name>` | Steuerbefehl senden (`{"value": true}`) |
+| POST | `/api/cmd/<name>` | Taster-Impuls senden (true → 300ms → false) |
 | GET | `/api/status` | OPC UA Verbindungsstatus |
 | GET | `/` | Web-Dashboard |
 
@@ -147,12 +155,10 @@ export SMARTVIEW_DEBUG=0         # 1 für Entwicklung
 curl http://192.168.137.108:5000/api/tags
 
 # Drucksensor lesen
-curl http://192.168.137.108:5000/api/tags/pressure
+curl http://192.168.137.108:5000/api/tags/druck
 
 # Start-Befehl senden
-curl -X POST http://192.168.137.108:5000/api/cmd/cmd_start \
-     -H "Content-Type: application/json" \
-     -d '{"value": true}'
+curl -X POST http://192.168.137.108:5000/api/cmd/start
 
 # Verbindungsstatus
 curl http://192.168.137.108:5000/api/status
@@ -166,16 +172,17 @@ curl http://192.168.137.108:5000/api/status
 SmartViewOPC/
 ├── backend/
 │   ├── api.py            # Flask REST-API
-│   ├── opc_client.py     # OPC UA Client
-│   ├── opc_simulator.py  # OPC UA Simulator (Testbetrieb)
-│   └── config.py         # Endpoint & Node IDs
+│   ├── opc_client.py     # OPC UA Client (Lesen & Schreiben, Auto-Reconnect)
+│   ├── opc_simulator.py  # OPC UA Simulator (Testbetrieb ohne SPS)
+│   └── config.py         # Endpoint, Node IDs, Simulator-Modus
 ├── frontend/
 │   ├── index.html        # Dashboard
-│   ├── css/style.css     # Styles
-│   └── js/app.js         # Polling & UI-Logik
+│   ├── css/style.css     # Dark-Mode Glassmorphism Design
+│   └── js/app.js         # Live-Polling & Steuerungslogik
 ├── docs/
-│   └── SCADA.md          # Recherche-Dokumentation
+│   └── SCADA.md          # Recherche: SCADA, OPC UA, Industrie 4.0, ISA-95
 ├── pyproject.toml
+├── CHANGELOG.md
 └── README.md
 ```
 
