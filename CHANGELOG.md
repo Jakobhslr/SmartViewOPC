@@ -4,6 +4,17 @@ Alle Versionen, Änderungen und Meilensteine des Projekts.
 
 ---
 
+## [2.1.0] – 2026-03-23
+
+### Bugfixes & Verbesserungen
+
+- **Alarm** – Neue Warnung bei Druck < 1,0 bar (Druckabfall)
+- **Docker** – Zeitzone `Europe/Berlin` (CET) im Container gesetzt → Zeitstempel in Historie korrekt
+- **Verlaufshistorie** – Neueste Einträge immer oben, Datum und Uhrzeit getrennt formatiert, aktuellste Zeile hervorgehoben
+- **Dashboard** – Überschrift angepasst
+
+---
+
 ## [2.0.0] – 2026-03-23
 
 ### Optionale Ziele – vollständige Umsetzung

@@ -94,6 +94,7 @@
 
 | Alarm | Schwellwert | Stufe |
 |---|---|---|
+| Druck zu niedrig | < 1,0 bar | ⚠ Warnung (gelb) |
 | Druck hoch | > 8,0 bar | ⚠ Warnung (gelb) |
 | Druck kritisch | > 9,0 bar | 🔴 Kritisch (rot, blinkend) |
 
