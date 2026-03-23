@@ -614,6 +614,10 @@ body::before {
 .td-on  { color: var(--accent-green) !important; }
 .td-off { color: var(--accent-red)   !important; }
 
+.row-latest td { background: rgba(6, 182, 212, 0.05); }
+.ts-date { color: var(--text-secondary); }
+.ts-time { color: var(--accent-cyan); font-weight: 600; }
+
 /* ─── Footer ──────────────────────────────────────────────────── */
 .dash-footer {
   text-align: center;

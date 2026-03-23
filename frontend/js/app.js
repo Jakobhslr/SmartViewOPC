@@ -126,14 +126,18 @@ async function loadHistory() {
       tbody.innerHTML = "<tr><td colspan='5'>Keine Daten</td></tr>";
       return;
     }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${r.ts}</td>
+    tbody.innerHTML = rows.map((r, i) => {
+      const ts = new Date(r.ts);
+      const datum = ts.toLocaleDateString("de-DE");
+      const uhrzeit = ts.toLocaleTimeString("de-DE");
+      return `<tr${i === 0 ? ' class="row-latest"' : ""}>
+        <td><span class="ts-date">${datum}</span> <span class="ts-time">${uhrzeit}</span></td>
         <td>${r.druck !== null ? r.druck.toFixed(2) + " bar" : "—"}</td>
         <td class="${r.foerderband_ein ? "td-on" : "td-off"}">${r.foerderband_ein ? "Läuft" : "Gestoppt"}</td>
         <td class="${r.zylinder_ausgefahren ? "td-on" : "td-off"}">${r.zylinder_ausgefahren ? "Ausgefahren" : "Eingefahren"}</td>
         <td class="${!r.sensor_lichtschranke ? "td-on" : "td-off"}">${!r.sensor_lichtschranke ? "Vorhanden" : "Frei"}</td>
-      </tr>`).join("");
+      </tr>`;
+    }).join("");
   } catch {
     tbody.innerHTML = "<tr><td colspan='5'>Fehler beim Laden</td></tr>";
   }
