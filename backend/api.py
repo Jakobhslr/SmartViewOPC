@@ -45,6 +45,7 @@ _log_counter = 0
 ALARM_CONFIG = [
     {"tag": "druck", "op": ">", "threshold": 9.0, "level": "critical", "msg": "Druck kritisch (> 9 bar)"},
     {"tag": "druck", "op": ">", "threshold": 8.0, "level": "warning",  "msg": "Druck hoch (> 8 bar)"},
+    {"tag": "druck", "op": "<", "threshold": 1.0, "level": "warning",  "msg": "Druck zu niedrig (< 1 bar)"},
 ]
 
 
