@@ -12,3 +12,4 @@ services:
       - OPC_ENDPOINT=opc.tcp://192.168.2.12:4840
       - DASHBOARD_PASSWORD=smartview2026
       - SECRET_KEY=smartview-opc-2026
+      - TZ=Europe/Berlin
