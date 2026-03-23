@@ -527,6 +527,93 @@ body::before {
   margin: 0;
 }
 
+/* ─── Alarm Banner ────────────────────────────────────────────── */
+.alarm-banner {
+  position: sticky;
+  top: 57px;
+  z-index: 90;
+  background: rgba(239, 68, 68, 0.12);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(12px);
+}
+
+.alarm-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.65rem 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.alarm-item {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.alarm-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.alarm-critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  animation: pulse-dot 1.5s infinite;
+}
+
+/* ─── Logout Button ───────────────────────────────────────────── */
+.logout-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 5px 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: 100px;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  color: var(--text-secondary);
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ─── Historie Tabelle ────────────────────────────────────────── */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.history-table th {
+  text-align: left;
+  padding: 0.6rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.history-table td {
+  padding: 0.55rem 1rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.history-table tr:hover td { background: rgba(255,255,255,0.02); }
+.td-on  { color: var(--accent-green) !important; }
+.td-off { color: var(--accent-red)   !important; }
+
 /* ─── Footer ──────────────────────────────────────────────────── */
 .dash-footer {
   text-align: center;

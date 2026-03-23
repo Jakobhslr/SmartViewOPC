@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  smartview:
+    build: .
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data   # SQLite-Datenbank persistent speichern
+    environment:
+      - OPC_ENDPOINT=opc.tcp://192.168.2.12:4840
+      - DASHBOARD_PASSWORD=smartview2026
+      - SECRET_KEY=smartview-opc-2026
