@@ -77,15 +77,15 @@ Unser System ist technisch ein **kleines SCADA** im Sinne der Grundfunktionen (D
 
 | Funktion | Unser System | Echtes SCADA |
 |----------|-------------|-------------|
-| Datenerfassung | ✅ OPC UA Polling | ✅ OPC UA / Subscription |
-| Visualisierung | ✅ Web-Dashboard | ✅ + Trends, Grafiken |
-| Steuerung | ✅ REST POST | ✅ + Interlock-Logik |
-| **Alarmierung** | ❌ (nicht implementiert) | ✅ Grenzwerte, Eskalation |
-| **Historisierung** | ❌ (kein DB) | ✅ Zeitreihendatenbank |
+| Datenerfassung | ✅ OPC UA Subscription (Push) | ✅ OPC UA / Subscription |
+| Visualisierung | ✅ Web-Dashboard (SSE, Echtzeit) | ✅ + Trends, Grafiken |
+| Steuerung | ✅ REST POST (Taster-Impuls) | ✅ + Interlock-Logik |
+| **Alarmierung** | ✅ Grenzwert-Alarme (Warnung / Kritisch) | ✅ Grenzwerte, Eskalation |
+| **Historisierung** | ✅ SQLite-Datenbank (`data/history.db`) | ✅ Zeitreihendatenbank |
 | **Redundanz** | ❌ (Single Server) | ✅ Hot-Standby |
-| **Benutzerverwaltung** | ❌ (kein Login) | ✅ Rollen & Berechtigungen |
+| **Benutzerverwaltung** | ✅ Login-Seite, Session, Passwortschutz | ✅ Rollen & Berechtigungen |
 
-Ein echtes SCADA beginnt dort, wo Alarme, Historisierung und Benutzerverwaltung hinzukommen.
+Ein echtes SCADA geht dort über unser System hinaus, wo Redundanz, rollenbasierte Benutzerverwaltung und erweiterte Trendanalysen benötigt werden.
 
 ---
 
