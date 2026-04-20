@@ -108,6 +108,6 @@ Level 0  │ Sensoren, Aktoren, Feldgeräte
 **Unser System (SmartView OPC) ist auf Level 2** angesiedelt:
 - Es liest Daten von Level 1 (S7-1516) via OPC UA
 - Es visualisiert und ermöglicht Steuerung (Supervisory Control)
-- Es könnte nach Level 3 hin erweitert werden (Historisierung → Datenbank)
+- Es reicht durch die SQLite-Historisierung und den Alarm-Handler bereits in Level 3 hinein
 
 Der **Raspberry Pi als Edge Device** ist dabei ein typisches Beispiel für Industrie 4.0: Er bringt IT-Intelligenz direkt in die Fertigungsebene, ohne aufwändige Infrastruktur.
