@@ -292,6 +292,16 @@ sudo systemctl restart smartview
 
 ---
 
+## Screenshots
+
+### Normalbetrieb
+![Dashboard Normalbetrieb](docs/Screenshot_dashboard_normal.png)
+
+### Alarm aktiv (Druck zu niedrig)
+![Dashboard Alarm](docs/Screenshot_dashboard_keinDruck.png)
+
+---
+
 ## Team & Lizenz
 
 Schulprojekt – SFE-Schulaufgabe
